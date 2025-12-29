@@ -54,14 +54,15 @@ def create_post(post: Post):
 # here we define a route to get a specific post by id
 
 @app.get("/posts/{id}")
-def get_post(id : int , response :Response):
+def get_post(id : int ):
     post = find_post(id)
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                         detail=f"post with id: {id} was not found") 
    #if not post:
         #response.status_code = status.HTTP_404_NOT_FOUND 
         #return {"message": f"post with id: {id} was not found"} 
-    post = find_post(id)
+    
     print(post)
     return {"post_detail": post}
 
