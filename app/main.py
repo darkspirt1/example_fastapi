@@ -129,3 +129,14 @@ def update_post(id: int, updated_post: schemas.CreatePost, db: Session = Depends
     db.commit()
     return updated_post
 
+#here we define a route to get a specific to create user
+
+@app.post("/users", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    new_user = models.User(**user.dict())
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+
