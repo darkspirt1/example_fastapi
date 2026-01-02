@@ -8,7 +8,7 @@ from psycopg2.extras import RealDictCursor
 import time
 
 # importing models and schemas
-from .import models ,schemas
+from .import models, schemas, utilis
 from .database import engine, get_db
 from sqlalchemy.orm import Session
 models.Base.metadata.create_all(bind=engine)
@@ -26,7 +26,6 @@ while True:
         time.sleep(5)
 
 app = FastAPI()
-
 
 
 # creating a list to hold our posts
@@ -55,12 +54,10 @@ def root():
     return {"message": "Hello World"}
 
 
-
-
 # here we retrieve all posts from database
 
 
-@app.get("/posts", status_code=status.HTTP_200_OK , response_model=list[schemas.Post])
+@app.get("/posts", status_code=status.HTTP_200_OK, response_model=list[schemas.Post])
 def get_posts(db: Session = Depends(get_db)):
     # cursor.execute(""" SELECT * FROM posts""")
     # posts = cursor.fetchall()
@@ -78,9 +75,9 @@ def create_post(post: schemas.CreatePost, db: Session = Depends(get_db)):
     # new_post = cursor.fetchone()
     # conn.commit()
     new_post = models.Post(**post.dict())  # unpacking the post object
-    db.add(new_post) # adding new post to session
+    db.add(new_post)  # adding new post to session
     db.commit()
-    db.refresh(new_post) # to get the new post from database
+    db.refresh(new_post)  # to get the new post from database
     return new_post
 
 
@@ -110,9 +107,6 @@ def delete_post(id: int, db: Session = Depends(get_db)):
     deleted_post.delete(synchronize_session=False)
     db.commit()
 
-    
-
-
 
 # here we will update a post in database
 
@@ -129,14 +123,17 @@ def update_post(id: int, updated_post: schemas.CreatePost, db: Session = Depends
     db.commit()
     return updated_post
 
-#here we define a route to get a specific to create user
+# here we define a route to get a specific to create user
+
 
 @app.post("/users", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+
+    # we hash the password - user.password
+    hashed_password = utilis.hash(user.password)
+    user.password = hashed_password
     new_user = models.User(**user.dict())
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     return new_user
-
-
