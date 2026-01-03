@@ -48,6 +48,10 @@ def get_post(id: int, db: Session = Depends(get_db), current_user : int = Depend
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id: {id} was not found")
+    
+    if post.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Not authorized to perform requested action")
    # if not post:
         # response.status_code = status.HTTP_404_NOT_FOUND
         # return {"message": f"post with id: {id} was not found"}
@@ -63,6 +67,10 @@ def delete_post(id: int, db: Session = Depends(get_db), current_user : int = Dep
     if not deleted_post.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id: {id} does not exist")
+    
+    if deleted_post.first().owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Not authorized to perform requested action")
     deleted_post.delete(synchronize_session=False)
     db.commit()
 
@@ -77,6 +85,10 @@ def update_post(id: int, updated_post: schemas.CreatePost, db: Session = Depends
     if post == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id: {id} does not exist")
+    
+    if post.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Not authorized to perform requested action")
 
     post_query.update(updated_post.dict(), synchronize_session=False)
     db.commit()
