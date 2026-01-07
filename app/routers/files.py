@@ -23,7 +23,7 @@ def upload_file(file: UploadFile = File(...), custom_filename: str = Form(None),
     db.commit()
     db.refresh(new_file)
 
-    return {"info": f"file '{filename}' saved to database"}
+    return {"details": f"file '{filename}' saved to database"}
 
 
 @router.get("/", response_model=List[schemas.FileUploadOut])

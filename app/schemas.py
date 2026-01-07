@@ -30,6 +30,7 @@ class Post(PostBase):
     created_at: datetime
     owner_id: int
     owner: 'UserOut'
+   
 
     class Config:
         from_attributes = True
@@ -73,6 +74,7 @@ class FileUploadOut(BaseModel):
     id: int
     filename: str
     uploaded_at: datetime
-
+    owner : UserOut
+   
     class Config:
         from_attributes = True
