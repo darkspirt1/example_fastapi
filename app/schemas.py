@@ -66,3 +66,13 @@ class TokenData(BaseModel):
 class Vote(BaseModel):
     post_id: int
     dir: int
+
+
+
+class FileUploadOut(BaseModel):
+    id: int
+    filename: str
+    uploaded_at: datetime
+
+    class Config:
+        from_attributes = True

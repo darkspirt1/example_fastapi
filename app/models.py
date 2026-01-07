@@ -1,6 +1,6 @@
 
 from .database import Base
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, LargeBinary
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.sql.expression import text
 from sqlalchemy.orm import relationship
@@ -39,3 +39,13 @@ class Vote(Base):
         "users.id", ondelete="CASCADE"), primary_key=True)
     post_id = Column(Integer, ForeignKey(
         "posts.id", ondelete="CASCADE"), primary_key=True)
+
+
+class file_uploads(Base):
+    __tablename__ = "file_uploads"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    filename = Column(String, nullable=False)
+    data = Column(LargeBinary, nullable=False)
+    uploaded_at = Column(TIMESTAMP(timezone=True), nullable=False,
+                         server_default=text('now()'))
