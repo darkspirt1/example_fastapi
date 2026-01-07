@@ -19,11 +19,12 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.add_column('file_uploads', sa.Column('owner_id', sa.Integer(), sa.ForeignKey('users.id', ondelete='CASCADE'), nullable=False))
+    op.add_column('file_uploads', sa.Column('owner_id', sa.Integer(
+    ), sa.ForeignKey('users.id', ondelete='CASCADE'), nullable=True))
     pass
     # ### end Alembic commands ###
 
 
 def downgrade() -> None:
-   op.drop_column('file_uploads', 'owner_id')
+    op.drop_column('file_uploads', 'owner_id')
     # ### end Alembic commands ###

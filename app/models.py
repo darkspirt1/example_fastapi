@@ -50,6 +50,6 @@ class file_uploads(Base):
     uploaded_at = Column(TIMESTAMP(timezone=True), nullable=False,
                          server_default=text('now()'))
     owner_id = Column(Integer, ForeignKey(
-        "users.id", ondelete="CASCADE"), nullable=False)
+        "users.id", ondelete="CASCADE"), nullable=True)
     
     owner = relationship("User")
