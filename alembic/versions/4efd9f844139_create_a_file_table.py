@@ -23,9 +23,8 @@ def upgrade() -> None:
                     sa.Column('id', sa.Integer(), nullable=False, primary_key=True),
                     sa.Column('filename', sa.String(), nullable=False),
                     sa.Column('data', sa.LargeBinary(), nullable=False),
-                    sa.Column('uploaded_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
-                    sa.Column('owner_id', sa.Integer(), sa.ForeignKey('users.id', ondelete='CASCADE'), nullable=False))
-    pass
+                    sa.Column('uploaded_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False)
+                    )
 
 
 def downgrade() -> None:
