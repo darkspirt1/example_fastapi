@@ -18,7 +18,7 @@ def upload_file(file: UploadFile = File(...), custom_filename: str = Form(None),
 
     filename = custom_filename if custom_filename else file.filename
 
-    new_file = models.file_uploads(filename=filename, data=file_content)
+    new_file = models.file_uploads(filename=filename, data=file_content, owner_id=current_user.id)
     db.add(new_file)
     db.commit()
     db.refresh(new_file)
