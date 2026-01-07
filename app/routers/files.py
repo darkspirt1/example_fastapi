@@ -50,6 +50,10 @@ def delete_file(id: int, db: Session = Depends(get_db), current_user: int = Depe
     if file == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"file with id: {id} does not exist")
+    
+    if file.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Not authorized to perform requested action")
     file_query.delete(synchronize_session=False)
     db.commit()
     return
