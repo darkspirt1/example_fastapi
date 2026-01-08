@@ -18,9 +18,11 @@ router = APIRouter(
 def upload_file(file: UploadFile = File(...), custom_filename: str = Form(None), db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     file_content = file.file.read()
     file_size = len(file_content)
-
-    filename = custom_filename if custom_filename else file.filename
-
+    original_extension = os.path.splitext(file.filename)[1]
+    if custom_filename:
+        filename = f"{custom_filename}{original_extension}"
+    else:
+        filename = file.filename
 
     new_file = models.file_uploads(filename=filename, data=file_content, owner_id=current_user.id)
     db.add(new_file)
