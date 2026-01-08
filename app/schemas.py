@@ -74,7 +74,7 @@ class FileUploadOut(BaseModel):
     id: int
     filename: str
     uploaded_at: datetime
-    owner : UserOut
+    owner : UserOut | None
    
     class Config:
         from_attributes = True

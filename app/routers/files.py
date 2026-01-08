@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from app import schemas, oauth2
 from .. import models
 from ..database import get_db
 from typing import List
-import shutil
+from .. config import settings 
 import os
+ADMIN_Email = settings.ADMIN_Email
 router = APIRouter(
     prefix="/files",
     tags=['Files'],
@@ -15,15 +17,17 @@ router = APIRouter(
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def upload_file(file: UploadFile = File(...), custom_filename: str = Form(None), db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     file_content = file.file.read()
+    file_size = len(file_content)
 
     filename = custom_filename if custom_filename else file.filename
+
 
     new_file = models.file_uploads(filename=filename, data=file_content, owner_id=current_user.id)
     db.add(new_file)
     db.commit()
     db.refresh(new_file)
 
-    return {"details": f"file '{filename}' saved to database"}
+    return {"details": f"file '{filename}' saved to database , size: {file_size} bytes"}
 
 
 @router.get("/", response_model=List[schemas.FileUploadOut])
@@ -57,3 +61,21 @@ def delete_file(id: int, db: Session = Depends(get_db), current_user: int = Depe
     file_query.delete(synchronize_session=False)
     db.commit()
     return
+
+
+
+@router.get("/download/{id}")
+def download_file(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+    file = db.query(models.file_uploads).filter(
+        models.file_uploads.id == id).first()
+    if not file:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"file with id: {id} was not found")
+    if current_user.email != ADMIN_Email:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Not authorized to download this file")
+    return Response(
+        content=file.data,
+        media_type="application/octet-stream",
+        headers={"Content-Disposition": f"attachment; filename={file.filename}"}
+    )
