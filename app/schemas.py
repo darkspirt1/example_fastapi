@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr , Field
 from typing import Optional
 from datetime import datetime
 
@@ -47,7 +47,7 @@ class PostOut(BaseModel):
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
-    phone_number: Optional[str] = None
+    phone_number: Optional[str] = Field(None, pattern = r"^\d{10}$")
 
 
 class UserLogin(BaseModel):
